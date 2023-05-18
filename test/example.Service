@@ -1,0 +1,59 @@
+## Qrexec Config
+## Syntax Test
+## vim:ft=qrexecconfig:spell
+
+## Valid {{{
+## Key, assignment and value can optionally be separated with whitespace.
+user='user'
+user = 'root'
+wait-for-session = 0
+wait-for-session=0
+
+## String values must be enclosed in single quotes.
+user='root'
+user   =   'user'
+## Boolean Integer values must be 0 or 1.
+wait-for-session=0
+wait-for-session  =   1
+## }}}
+## Invalid {{{
+## Keys must be known.
+user Y = 'user'
+useruser = 'user'
+wait-for-sessionX = 1
+wait-for-session X= 1
+## Assignment must be made.
+user
+wait-for-session
+## Value of assignment must also be made
+user =
+wait-for-session =
+## Assignment must respect the value type, can't repeat the assignment sign.
+wait-for-session == 1
+user =='user'
+## Strings must be quoted.
+user = user
+## Strings must be quoted correctly, else, show the error.
+user = u'se'r
+## If value is provided, it can't be empty.
+user = ''
+## Value can't also contain disallowed characters.
+user='u\ser'
+user = ' user '
+## Nothing can come before the opening quote.
+user = a 't'
+user = a't'
+## Nothing can come after the closing quote.
+user = 'u'ser
+user = 'u'a'
+## Unterminated quoted string is also shown.
+user = 'unfinished
+user = unfinished'
+## For Boolean Integers, block everything that is not 0 or 1.
+wait-for-session = 2
+wait-for-session = -1
+wait-for-session = 11
+wait-for-session = 01
+wait-for-session = '1'
+wait-for-session = \1
+## }}}
