@@ -11,6 +11,7 @@ function! qrexeccomplete#Complete(findstart, base)
   if a:findstart
     let line = getline('.')
     let start = col('.') - 1
+    " Technically this could be '\k' if 'iskeyword' was set correctly.
     while start > 0 && line[start - 1] =~ '\S\+'
       let start -= 1
     endwhile
@@ -138,7 +139,7 @@ function! qrexeccomplete#Complete(findstart, base)
       let cur_items = services . " " . directives
     endif
     for m in sort(split(cur_items))
-      if m =~ '^'.a:base
+      if stridx(m, a:base) == 0
         call add(res, m)
       endif
     endfor
@@ -162,7 +163,7 @@ function! qrexeccomplete#Complete(findstart, base)
     let field_match = matchstr(line, '^\s*\S\+\s\+\S*$')
     if field_match != ""
       for m in sort(split(incl_services))
-        if m =~ '^'.a:base
+        if stridx(m, a:base) == 0
           call add(res, m)
         endif
       endfor
@@ -172,7 +173,7 @@ function! qrexeccomplete#Complete(findstart, base)
     let field_match = matchstr(line, '^\s*\S\+\s\+\S\+\s\+\S*$')
     if field_match != ""
       for m in sort(split(incl_arguments))
-        if m =~ '^'.a:base
+        if stridx(m, a:base) == 0
           call add(res, m)
         endif
       endfor
@@ -182,7 +183,7 @@ function! qrexeccomplete#Complete(findstart, base)
     let field_match = matchstr(line, '^\s*\S\+\s\+\S\+\s\+\S\+\s\+\S*$')
     if field_match != ""
       for m in sort(split(incl_files))
-        if m =~ '^'.a:base
+        if stridx(m, a:base) == 0
           call add(res, m)
         endif
       endfor
@@ -196,14 +197,14 @@ function! qrexeccomplete#Complete(findstart, base)
   if field_match != ""
     if &filetype ==# "qrexecpolicyservice"
       for m in sort(split(destinations))
-        if m =~ '^'.a:base
+        if stridx(m, a:base) == 0
           call add(res, m)
         endif
       endfor
       return res
     endif
     for m in sort(split(arguments))
-      if m =~ '^'.a:base
+      if stridx(m, a:base) == 0
         call add(res, m)
       endif
     endfor
@@ -219,7 +220,7 @@ function! qrexeccomplete#Complete(findstart, base)
       let cur_items = sources
     endif
     for m in sort(split(cur_items))
-      if m =~ '^'.a:base
+      if stridx(m, a:base) == 0
         call add(res, m)
       endif
     endfor
@@ -247,11 +248,13 @@ function! qrexeccomplete#Complete(findstart, base)
       let cur_items = destinations
     endif
     for m in sort(split(cur_items))
-      let param_match = matchstr(line, '.*'.split(m, "=")[0].'=')
-      if param_match != ""
+      " Use space and tab to check for parameter existence.
+      " Whitespace helps differentiate target= from default_target=
+      if stridx(line, ' '.split(m, "=")[0].'=') >= 0 ||
+       \ stridx(line, '	'.split(m, "=")[0].'=') >= 0
         continue
       endif
-      if m =~ '^'.a:base
+      if stridx(m, a:base) == 0
         call add(res, m)
       endif
     endfor
@@ -262,7 +265,7 @@ function! qrexeccomplete#Complete(findstart, base)
   let field_match = matchstr(line, '^\s*\S\+\s\+\S\+\s\+\S\+\s\+\S\+\s\+\S*$')
   if field_match != ""
     for m in sort(split(resolutions))
-      if m =~ '^'.a:base
+      if stridx(m, a:base) == 0
         call add(res, m)
       endif
     endfor
@@ -282,11 +285,13 @@ function! qrexeccomplete#Complete(findstart, base)
       return ''
     endif
     for m in sort(split(cur_items))
-      let param_match = matchstr(line, '.*'.split(m, "=")[0].'=')
-      if param_match != ""
+      " Use space and tab to check for parameter existence.
+      " Whitespace helps differentiate target= from default_target=
+      if stridx(line, ' '.split(m, "=")[0].'=') >= 0 ||
+       \ stridx(line, '	'.split(m, "=")[0].'=') >= 0
         continue
       endif
-      if m =~ '^'.a:base
+      if stridx(m, a:base) == 0
         call add(res, m)
       endif
     endfor
@@ -295,4 +300,4 @@ function! qrexeccomplete#Complete(findstart, base)
 
 endfunction
 
-" vim: foldmethod=expr foldexpr=getline(v\:lnum)=~'^\\s*"\ Section\:'?'>1'\:'='
+" vim: sw=2 sts=2 et fdm=expr fde=getline(v\:lnum)=~'^\\s*"\ Section\:'?'>1'\:'='
