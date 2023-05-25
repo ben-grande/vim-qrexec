@@ -3,7 +3,7 @@
 " Maintainer:   Ben Grande <ben.grande.b@gmail.com>
 " License:      Vim (see :h license)
 " Repository:   https://codeberg.org/ben.grande.b/vim-qrexec
-" Last Change:  2023 May 18
+" Last Change:  2023 May 25
 
 if exists("b:did_ftplugin")
   finish
@@ -20,7 +20,7 @@ set cpo&vim
 let b:undo_ftplugin = "
   \ setlocal fileformat< comments< commentstring< formatoptions< |
   \ setlocal textwidth< iskeyword< completefunc< omnifunc< |
-  \ setlocal spellfile< |
+  \ setlocal spell< spelllang< spellfile< |
   \"
 
 setlocal fileformat=unix
@@ -30,6 +30,8 @@ setlocal formatoptions=jcrql
 setlocal iskeyword=33,42,43,45,46,48-57,58,61,@-@,65-90,95,97-122
 setlocal completefunc=qrexeccomplete#Complete
 setlocal omnifunc=qrexeccomplete#Complete
+setlocal spell
+setlocal spelllang+=en_us
 execute "setlocal spellfile+=" . expand("<sfile>:p:h:h") .
       \                      "/spell/qrexec.ascii.add"
 

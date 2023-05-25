@@ -1,5 +1,5 @@
 *qrexec.txt*  A Qrexec companion for the policy breakers
-*qrexec* *qrexec.vim* *vim-qrexec*  Last Change:  2023 May 18
+*qrexec* *qrexec.vim* *vim-qrexec*  Last Change:  2023 May 25
 >
        ______     ______     ______     __  __     ______     ______
       /\  __ \   /\  == \   /\  ___\   /\_\_\_\   /\  ___\   /\  ___\
@@ -127,14 +127,15 @@ first correct all syntax errors before trying to complete a word.
 
 SPELL                                                           *qrexec-spell*
 
-The plugin spell file is appended to the value of 'spellfile', thus you can
-use your own language dictionary for comments while getting the benefits of
-having more good words added to the list used by the spell checker.
+The option 'spell' is enabled and 'spelllang' has the value "en_us" appended.
+A spell file is appended to 'spellfile', thus you can use your own language
+dictionary for comments while getting the benefits of having more good words
+added to the list used by the spell checker.
 
 The spell file is only used for comments, as the syntax disables spell
-checking in lines that are rules to not distract the reader's attention,
-because most of the words present there such as service names, arguments, qube
-names, tags and user names are not in a common word list.
+checking in rules to not distract the reader's attention, because most of the
+words present there such as service names, arguments, qube names, tags and
+user names are not in a common word list.
 
 LICENSE                                                       *qrexec-license*
 
