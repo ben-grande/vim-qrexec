@@ -3,7 +3,7 @@
 " Maintainer:   Ben Grande <ben.grande.b@gmail.com>
 " License:      Vim (see :h license)
 " Repository:   https://codeberg.org/ben.grande.b/vim-qrexec
-" Last Change:  2023 May 18
+" Last Change:  2023 May 25
 
 
 " Section: To do
@@ -69,10 +69,6 @@ endif
 
 let s:cpo_save = &cpo
 set cpo&vim
-
-if !exists("b:qrexecpolicyservice")
-  let b:qrexecpolicyservice = 0
-endif
 
 
 " Section: Cluster
@@ -170,7 +166,7 @@ syn match qrexecpolicyRuleIncomplete
   \ '^\s*\zs\S\+\ze\(\s\+\)\?$'
   \ contains=@NoSpell
 
-if b:qrexecpolicyservice == 0
+if &filetype ==# "qrexecpolicy"
   syn match qrexecpolicyServiceSpecific
     \ '^\s*\zs\S\+\ze\s\+\S'
     \ contains=qrexecpolicyServiceSpecificError,@NoSpell
@@ -183,7 +179,7 @@ if b:qrexecpolicyservice == 0
     \ nextgroup=@qrexecpolicyArgPrefixGenericGroup
     \ skipwhite
 
-else
+elseif &filetype ==# "qrexecpolicyservice"
   syn match qrexecpolicySourcePolicyService
     \ '^\s*\zs\S\+\ze\s\+\S'
     \ contains=@NoSpell,@qrexecpolicySourceGroup
@@ -378,7 +374,6 @@ syn match qrexecpolicyTargetGeneric
   \ nextgroup=@qrexecpolicyResolutionGroup
   \ skipwhite
 
-  " \ '@\(adminvm\|anyvm\|default\|dispvm\)\ze\(\s\+\|$\)'
 syn match qrexecpolicyTargetTokenSingle
   \ '@\(adminvm\|anyvm\|default\|dispvm\)\ze\s\+\S'
   \ contained
@@ -795,8 +790,6 @@ hi def link qrexecpolicyIncomplete                     SpellRare
 
 " Section: End
 let b:current_syntax = "qrexecpolicy"
-
-unlet b:qrexecpolicyservice
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
