@@ -42,6 +42,7 @@ filetype plugin indent on
 
 If you need help, read the reference manual with `:help qrexec`.
 On the other hand, if you found the help file confusing, you found a bug and
+wish to report, please open an issue.
 
 ## License
 
