@@ -3,7 +3,7 @@
 " Maintainer:   Ben Grande <ben.grande.b@gmail.com>
 " License:      Vim (see :h license)
 " Repository:   https://codeberg.org/ben.grande.b/vim-qrexec
-" Last Change:  2023 May 17
+" Last Change:  2023 May 25
 
 
 function! qrexeccomplete#Complete(findstart, base)
@@ -56,13 +56,24 @@ function! qrexeccomplete#Complete(findstart, base)
     if split(l)[0][0] == "#"
       continue
     endif
+    for i in split(l)
+      if len(i) != len(matchstr(i, '[0-9A-Za-z!=_@.*:/+-]\+'))
+        continue
+      endif
+    endfor
     if split(l)[0] == "!include-service"
       if len(split(l)) < 4
         continue
       endif
-      let incl_services .= " ".split(l)[1]
-      let incl_arguments .= " ".split(l)[2]
-      let incl_files .= " ".split(l)[3]
+      if len(split(l)[1]) == len(matchstr(split(l)[1], '[0-9A-Za-z_.*-]\+'))
+        let incl_services .= " ".split(l)[1]
+      endif
+      if len(split(l)[2]) == len(matchstr(split(l)[2], '[0-9A-Za-z_.*+-]\+'))
+        let incl_arguments .= " ".split(l)[2]
+      endif
+      if len(split(l)[3]) == len(matchstr(split(l)[3], '[0-9A-Za-z/_.-]\+'))
+        let incl_files .= " ".split(l)[3]
+      endif
       continue
     endif
     if split(l)[0][0] == "!"
@@ -75,18 +86,34 @@ function! qrexeccomplete#Complete(findstart, base)
       if len(split(l)) < 3
         continue
       endif
-      let sources .= " ".split(l)[0]
-      let destinations .= " ".split(l)[1]
+      if len(split(l)[0]) == len(matchstr(split(l)[0], '[0-9A-Za-z_-]\+')) ||
+      \  len(split(l)[0]) == len(matchstr(split(l)[0], '@\(dispvm:\(@tag:\)\?\|tag:\)[0-9A-Za-z_-]\+'))
+        let sources .= " ".split(l)[0]
+      endif
+      if len(split(l)[1]) == len(matchstr(split(l)[1], '[0-9A-Za-z_-]\+')) ||
+      \  len(split(l)[1]) == len(matchstr(split(l)[1], '@\(dispvm:\(@tag:\)\?\|tag:\)[0-9A-Za-z_-]\+'))
+        let destinations .= " ".split(l)[1]
+      endif
       continue
     endif
     " qrexecpolicy
     if len(split(l)) < 5
       continue
     endif
-    let services .= " ".split(l)[0]
-    let arguments .= " ".split(l)[1]
-    let sources .= " ".split(l)[2]
-    let destinations .= " ".split(l)[3]
+    if len(split(l)[0]) == len(matchstr(split(l)[0], '[0-9A-Za-z_.*-]\+'))
+      let services .= " ".split(l)[0]
+    endif
+    if len(split(l)[1]) == len(matchstr(split(l)[1], '[0-9A-Za-z_.*+-]\+'))
+      let arguments .= " ".split(l)[1]
+    endif
+    if len(split(l)[2]) == len(matchstr(split(l)[2], '[0-9A-Za-z_-]\+')) ||
+    \  len(split(l)[2]) == len(matchstr(split(l)[2], '@\(dispvm:\(@tag:\)\?\|tag:\)[0-9A-Za-z_-]\+'))
+      let sources .= " ".split(l)[2]
+    endif
+    if len(split(l)[3]) == len(matchstr(split(l)[3], '[0-9A-Za-z_-]\+')) ||
+    \  len(split(l)[3]) == len(matchstr(split(l)[3], '@\(dispvm:\(@tag:\)\?\|tag:\)[0-9A-Za-z_-]\+'))
+      let destinations .= " ".split(l)[3]
+    endif
   endfor
 
   if exists("b:compl_context")
