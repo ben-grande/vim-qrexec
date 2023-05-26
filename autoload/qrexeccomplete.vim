@@ -3,7 +3,7 @@
 " Maintainer:   Ben Grande <ben.grande.b@gmail.com>
 " License:      Vim (see :h license)
 " Repository:   https://codeberg.org/ben.grande.b/vim-qrexec
-" Last Change:  2023 May 25
+" Last Change:  2023 May 26
 
 
 function! qrexeccomplete#Complete(findstart, base)
@@ -26,12 +26,13 @@ function! qrexeccomplete#Complete(findstart, base)
   let res = []
   let files = ""
   let incl_files = ""
-  let directives = "!include !include-dir !include-service !compat-4.0"
+  let incl_keys = "!include"
+  let keys = incl_keys." !include-dir !include-service !compat-4.0"
   let services = "*"
   let incl_services = services
   let arguments = "* +"
   let incl_arguments = arguments
-  let sources = "@adminvm @anyvm @dispvm: @dispvm:@tag: @tag:"
+  let sources = "* @adminvm @anyvm @dispvm: @dispvm:@tag: @tag:"
   let sources ..= " @type:AdminVM @type:AppVM @type:DispVM @type:StandaloneVM"
   let sources ..= " @type:TemplateVM"
   let destinations = sources." @default @dispvm"
@@ -134,9 +135,9 @@ function! qrexeccomplete#Complete(findstart, base)
     if &filetype ==# "qrexecconfig"
       let cur_items = config_keys
     elseif &filetype ==# "qrexecpolicyservice"
-      let cur_items = directives . " " . sources
+      let cur_items = incl_keys . " " . sources
     else
-      let cur_items = services . " " . directives
+      let cur_items = services . " " . keys
     endif
     for m in sort(split(cur_items))
       if stridx(m, a:base) == 0

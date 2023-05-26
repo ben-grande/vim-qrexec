@@ -30,9 +30,9 @@
 ## Include
 !compat-4.0
 !include      include/file_+-.test
-!include-dir  include/dir
 !include      file
 !include-dir  /dir/dir
+!include-dir  include/dir
 !include-service  *               *                 include/file_+-.test
 !include-service  qrexec.Service  *                 include/file_+-.test
 !include-service  qrexec.Service  ++-_.09argument   include/file_+-.test
@@ -72,11 +72,12 @@ qrexec.Service  *   @type:TemplateVM    @type:TemplateVM    deny
 ## having the expected behavior.
 
 ## Included file can't be outside of POLICYPATH or the include subdirectory:
-!include file/
-!include file/a
-
-!include-dir /as
-!include-dir a/a
+!include dir/
+!include dir/file
+!include /dir
+!include /dir/
+!include /dir/file
+!include include/
 
 ## Everything extraneous is an error
 !compat-4.0err
