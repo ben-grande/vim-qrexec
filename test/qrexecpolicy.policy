@@ -71,6 +71,13 @@ qrexec.Service  *   @type:TemplateVM    @type:TemplateVM    deny
 ## file and should be fixed, except if that is the last line in the block
 ## having the expected behavior.
 
+## Included file can't be outside of POLICYPATH or the include subdirectory:
+!include file/
+!include file/a
+
+!include-dir /as
+!include-dir a/a
+
 ## Everything extraneous is an error
 !compat-4.0err
 !compat-4.0  err

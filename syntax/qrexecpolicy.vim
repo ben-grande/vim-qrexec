@@ -190,6 +190,12 @@ if &filetype ==# "qrexecpolicy"
     \ nextgroup=@qrexecpolicyInclServiceGroup
     \ skipwhite
 
+  syn match qrexecpolicyInclDir
+    \ '^\s*\zs!include-dir\ze\s\+\S'
+    \ contains=@NoSpell
+    \ nextgroup=qrexecpolicyInclFilePath
+    \ skipwhite
+
 elseif &filetype ==# "qrexecpolicyservice"
   syn match qrexecpolicySourcePolicyService
     \ '^\s*\zs\S\+\ze\s\+\S'
@@ -200,7 +206,7 @@ elseif &filetype ==# "qrexecpolicyservice"
 endif
 
 syn match qrexecpolicyInclFile
-  \ '^\s*\zs\(!include\(-dir\)\?\)\ze\s\+\S'
+  \ '^\s*\zs!include\ze\s\+\S'
   \ contains=@NoSpell
   \ nextgroup=qrexecpolicyInclFilePath
   \ skipwhite
@@ -700,6 +706,7 @@ syn match qrexecpolicyCommentModeline
 " Incl Group
 hi def link qrexecpolicyCompat                         qrexecpolicyIncl
 hi def link qrexecpolicyInclFile                       qrexecpolicyIncl
+hi def link qrexecpolicyInclDir                        qrexecpolicyIncl
 hi def link qrexecpolicyInclService                    qrexecpolicyIncl
 hi def link qrexecpolicyInclServiceGeneric             qrexecpolicySpecialChar
 hi def link qrexecpolicyInclArgPrefixGeneric           qrexecpolicyArgPrefix

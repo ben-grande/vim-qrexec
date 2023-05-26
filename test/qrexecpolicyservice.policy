@@ -17,11 +17,9 @@
    source     dest    deny
    *          *       deny
    !include                test
-   !include-dir            test
 
 ## Include
 !include      include/file_+-.test
-!include-dir  include/file_+-.test
 
 ## Parameters
 source dest deny  notify=yes
