@@ -3,13 +3,14 @@
 ## Maintainer:   Ben Grande <ben.grande.b@gmail.com>
 ## License:      Vim (see :h license)
 ## Repository:   https://codeberg.org/ben.grande.b/vim-qrexec
-## Last Change:  2023 May 18
+## Last Change:  2023 May 26
 ##
 ## Vim requires a compiled spell file to work and this process is manual.
 ## If you have changed this '.add' file, please regenerate the '.spl' file:
-##   $ vim -u NONE -e -c ":mkspell! -ascii qrexecpolicy.ascii.add" -c q
+##   $ vim -u NONE -c "mkspell! -ascii qrexec.ascii.spl qrexec.ascii.add" -c q
 ## or set Vim to auto compile ascii spell files when writing:
-##   au BufWritePre,FileWritePre **/spell/*.ascii.add :sil mkspell! -ascii %
+##   autocmd BufWritePre,FileWritePre **/spell/*.ascii.add
+##         \ silent execute "mkspell! -ascii ".expand('%:r').".spl %"
 
 ## Standard
 QubesOS
