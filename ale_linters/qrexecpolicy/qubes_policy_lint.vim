@@ -3,7 +3,7 @@
 " Maintainer:   Ben Grande <ben.grande.b@gmail.com>
 " License:      Vim (see :h license)
 " Repository:   https://codeberg.org/ben.grande.b/vim-qrexec
-" Last Change:  2023 May 18
+" Last Change:  2023 May 26
 
 
 call ale#Set('qrexecpolicy_qubes_policy_lint_executable', 'qubes-policy-lint')
@@ -13,7 +13,6 @@ function! ale_linters#qrexecpolicy#qubes_policy_lint#GetCommand(buffer) abort
   let l:include_service = ''
   if &filetype ==# "qrexecpolicyservice"
     let l:include_service = ' --include-service '
-  endif
   endif
   return '%e '
        \ . l:include_service
