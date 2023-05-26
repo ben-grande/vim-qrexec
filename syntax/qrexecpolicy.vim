@@ -3,7 +3,7 @@
 " Maintainer:   Ben Grande <ben.grande.b@gmail.com>
 " License:      Vim (see :h license)
 " Repository:   https://codeberg.org/ben.grande.b/vim-qrexec
-" Last Change:  2023 May 25
+" Last Change:  2023 May 26
 
 
 " Section: To do
@@ -179,29 +179,30 @@ if &filetype ==# "qrexecpolicy"
     \ nextgroup=@qrexecpolicyArgPrefixGenericGroup
     \ skipwhite
 
+  syn match qrexecpolicyCompat
+    \ '^\s*\zs!compat-4.0'
+    \ contains=@NoSpell
+    \ nextgroup=qrexecpolicyMustEndError
+
+  syn match qrexecpolicyInclService
+    \ '^\s*\zs!include-service\ze\s\+\S'
+    \ contains=@NoSpell
+    \ nextgroup=@qrexecpolicyInclServiceGroup
+    \ skipwhite
+
 elseif &filetype ==# "qrexecpolicyservice"
   syn match qrexecpolicySourcePolicyService
     \ '^\s*\zs\S\+\ze\s\+\S'
     \ contains=@NoSpell,@qrexecpolicySourceGroup
     \ nextgroup=@qrexecpolicyTargetGroup
     \ skipwhite
-endif
 
-syn match qrexecpolicyCompat
-  \ '^\s*\zs!compat-4.0'
-  \ contains=@NoSpell
-  \ nextgroup=qrexecpolicyMustEndError
+endif
 
 syn match qrexecpolicyInclFile
   \ '^\s*\zs\(!include\(-dir\)\?\)\ze\s\+\S'
   \ contains=@NoSpell
   \ nextgroup=qrexecpolicyInclFilePath
-  \ skipwhite
-
-syn match qrexecpolicyInclService
-  \ '^\s*\zs!include-service\ze\s\+\S'
-  \ contains=@NoSpell
-  \ nextgroup=@qrexecpolicyInclServiceGroup
   \ skipwhite
 
 

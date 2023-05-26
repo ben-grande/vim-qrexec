@@ -18,17 +18,10 @@
    *          *       deny
    !include                test
    !include-dir            test
-   !include-service  *  *  test
-   !include-service  a  *  test
-   !compat-4.0
 
 ## Include
-!compat-4.0
-!include      dir/file_+-.test
-!include-dir  dir/file_+-.test
-!include-service  *               *                 dir/file_+-.test
-!include-service  qrexec.Service  *                 dir/file_+-.test
-!include-service  qrexec.Service  ++-_.09argument   dir/file_+-.test
+!include      include/file_+-.test
+!include-dir  include/file_+-.test
 
 ## Parameters
 source dest deny  notify=yes
@@ -65,11 +58,10 @@ source              @dispvm             deny
 ## having the expected behavior.
 
 ## Everything extraneous is an error
-!compat-4.0err
-!compat-4.0  err
+!compat-4.0
 !include file err
 !include-dir dir/err err
-!include-service * * file err
+!include-service * * file
 
 ## If the rule hasn't reached the minimum field number, the last syntax group
 ## is highlighted as incomplete:

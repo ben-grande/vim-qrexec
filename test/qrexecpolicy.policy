@@ -29,17 +29,18 @@
 
 ## Include
 !compat-4.0
-!include      dir/file_+-.test
-!include-dir  dir/file_+-.test
-!include-service  *               *                 dir/file_+-.test
-!include-service  qrexec.Service  *                 dir/file_+-.test
-!include-service  qrexec.Service  ++-_.09argument   dir/file_+-.test
+!include      include/file_+-.test
+!include-dir  include/dir
+!include      file
+!include-dir  /dir/dir
+!include-service  *               *                 include/file_+-.test
+!include-service  qrexec.Service  *                 include/file_+-.test
+!include-service  qrexec.Service  ++-_.09argument   include/file_+-.test
 
 ## Parameters
 * * source dest deny  notify=yes
 * * source dest allow notify=no autostart=yes user=user target=example
 * * source dest ask   notify=yes autostart=no user=user target=example default_target=test
-
 
 ## Service name, Argument and @token in target and default_target
 local-09.Service  *         source dest deny notify=no
