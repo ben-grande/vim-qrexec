@@ -39,8 +39,11 @@ function! qrexeccomplete#Complete(findstart, base)
   let resolutions = "deny allow ask"
   let deny_params = "notify=yes notify=no"
   let allow_params = deny_params." user= autostart=yes autostart=no target="
-  let ask_params = allow_params." default_target="
-  let param_target_args = "@dispvm @dispvm:"
+  let allow_params ..= " target=@adminvm target=@dispvm"
+  let allow_params ..= " target=@dispvm:"
+  let ask_params = allow_params." default_target= default_target=@adminvm"
+  let ask_params ..= " default_target=@dispvm"
+  let ask_params ..= " default_target=@dispvm:"
   let config_keys = "user= wait-for-session="
 
   " Section: Read buffer Data
@@ -104,14 +107,16 @@ function! qrexeccomplete#Complete(findstart, base)
       endif
       if split(l)[2] ==# "allow"
         for p in split(l)[3:]
-          if len(p) == len(matchstr(p, '^\(user\|target\)=[0-9A-Za-z=@:_-]\+$'))
+          if len(p) == len(matchstr(p, '^\(user\|target\)=[0-9A-Za-z=_-]\+$')) ||
+           \ len(p) == len(matchstr(p, '^target=@dispvm:[0-9A-Za-z=_-]\+$'))
             let allow_params .= " ".p
           endif
         endfor
         continue
       elseif split(l)[2] ==# "ask"
         for p in split(l)[3:]
-          if len(p) == len(matchstr(p, '^\(user\|\(default_\)\?target\)=[0-9A-Za-z=@:_-]\+$'))
+          if len(p) == len(matchstr(p, '^\(user\|\(default_\)\?target\)=[0-9A-Za-z=_-]\+$')) ||
+           \ len(p) == len(matchstr(p, '^\(default_\)\?target=@dispvm:[0-9A-Za-z=_-]\+$'))
           let ask_params .= " ".p
           endif
         endfor
@@ -144,14 +149,16 @@ function! qrexeccomplete#Complete(findstart, base)
     endif
     if split(l)[4] ==# "allow"
       for p in split(l)[5:]
-        if len(p) == len(matchstr(p, '^\(user\|target\)=[0-9A-Za-z=@:_-]\+$'))
+        if len(p) == len(matchstr(p, '^\(user\|target\)=[0-9A-Za-z=_-]\+$')) ||
+          \ len(p) == len(matchstr(p, '^target=@dispvm:[0-9A-Za-z=_-]\+$'))
           let allow_params .= " ".p
         endif
       endfor
       continue
     elseif split(l)[4] ==# "ask"
       for p in split(l)[5:]
-        if len(p) == len(matchstr(p, '^\(user\|\(default_\)\?target\)=[0-9A-Za-z=@:_-]\+$'))
+        if len(p) == len(matchstr(p, '^\(user\|\(default_\)\?target\)=[0-9A-Za-z=_-]\+$')) ||
+          \ len(p) == len(matchstr(p, '^\(default_\)\?target=@dispvm:[0-9A-Za-z=_-]\+$'))
         let ask_params .= " ".p
         endif
       endfor
