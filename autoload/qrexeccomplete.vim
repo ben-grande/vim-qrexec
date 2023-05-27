@@ -3,7 +3,7 @@
 " Maintainer:   Ben Grande <ben.grande.b@gmail.com>
 " License:      Vim (see :h license)
 " Repository:   https://codeberg.org/ben.grande.b/vim-qrexec
-" Last Change:  2023 May 26
+" Last Change:  2023 May 27
 
 
 function! qrexeccomplete#Complete(findstart, base)
@@ -59,7 +59,7 @@ function! qrexeccomplete#Complete(findstart, base)
       continue
     endif
     for i in split(l)
-      if len(i) != len(matchstr(i, '[0-9A-Za-z!=_@.*:/+-]\+'))
+      if len(i) != len(matchstr(i, '^[0-9A-Za-z!=_@.*:/+-]\+$'))
         continue
       endif
     endfor
@@ -67,13 +67,13 @@ function! qrexeccomplete#Complete(findstart, base)
       if len(split(l)) < 4
         continue
       endif
-      if len(split(l)[1]) == len(matchstr(split(l)[1], '[0-9A-Za-z_.*-]\+'))
+      if len(split(l)[1]) == len(matchstr(split(l)[1], '^[0-9A-Za-z_.*-]\+$'))
         let incl_services .= " ".split(l)[1]
       endif
-      if len(split(l)[2]) == len(matchstr(split(l)[2], '[0-9A-Za-z_.*+-]\+'))
+      if len(split(l)[2]) == len(matchstr(split(l)[2], '^[0-9A-Za-z_.*+-]\+$'))
         let incl_arguments .= " ".split(l)[2]
       endif
-      if len(split(l)[3]) == len(matchstr(split(l)[3], '[0-9A-Za-z/_.-]\+'))
+      if len(split(l)[3]) == len(matchstr(split(l)[3], '^[0-9A-Za-z/_.-]\+$'))
         let incl_files .= " ".split(l)[3]
       endif
       continue
@@ -88,33 +88,74 @@ function! qrexeccomplete#Complete(findstart, base)
       if len(split(l)) < 3
         continue
       endif
-      if len(split(l)[0]) == len(matchstr(split(l)[0], '[0-9A-Za-z_-]\+')) ||
-      \  len(split(l)[0]) == len(matchstr(split(l)[0], '@\(dispvm:\(@tag:\)\?\|tag:\)[0-9A-Za-z_-]\+'))
+      if len(split(l)[0]) == len(matchstr(split(l)[0], '^[0-9A-Za-z_-]\+$')) ||
+      \  len(split(l)[0]) == len(matchstr(split(l)[0], '^@\(dispvm:\(@tag:\)\?\|tag:\)[0-9A-Za-z_-]\+$'))
         let sources .= " ".split(l)[0]
       endif
-      if len(split(l)[1]) == len(matchstr(split(l)[1], '[0-9A-Za-z_-]\+')) ||
-      \  len(split(l)[1]) == len(matchstr(split(l)[1], '@\(dispvm:\(@tag:\)\?\|tag:\)[0-9A-Za-z_-]\+'))
+      if len(split(l)[1]) == len(matchstr(split(l)[1], '^[0-9A-Za-z_-]\+$')) ||
+      \  len(split(l)[1]) == len(matchstr(split(l)[1], '^@\(dispvm:\(@tag:\)\?\|tag:\)[0-9A-Za-z_-]\+$'))
         let destinations .= " ".split(l)[1]
       endif
-      continue
+      if len(split(l)) < 4
+        continue
+      endif
+      if split(l)[2] ==# "deny"
+        continue
+      endif
+      if split(l)[2] ==# "allow"
+        for p in split(l)[3:]
+          if len(p) == len(matchstr(p, '^\(user\|target\)=[0-9A-Za-z=@:_-]\+$'))
+            let allow_params .= " ".p
+          endif
+        endfor
+        continue
+      elseif split(l)[2] ==# "ask"
+        for p in split(l)[3:]
+          if len(p) == len(matchstr(p, '^\(user\|\(default_\)\?target\)=[0-9A-Za-z=@:_-]\+$'))
+          let ask_params .= " ".p
+          endif
+        endfor
+        continue
+      endif
     endif
     " qrexecpolicy
     if len(split(l)) < 5
       continue
     endif
-    if len(split(l)[0]) == len(matchstr(split(l)[0], '[0-9A-Za-z_.*-]\+'))
+    if len(split(l)[0]) == len(matchstr(split(l)[0], '^[0-9A-Za-z_.*-]\+$'))
       let services .= " ".split(l)[0]
     endif
-    if len(split(l)[1]) == len(matchstr(split(l)[1], '[0-9A-Za-z_.*+-]\+'))
+    if len(split(l)[1]) == len(matchstr(split(l)[1], '^[0-9A-Za-z_.*+-]\+$'))
       let arguments .= " ".split(l)[1]
     endif
-    if len(split(l)[2]) == len(matchstr(split(l)[2], '[0-9A-Za-z_-]\+')) ||
-    \  len(split(l)[2]) == len(matchstr(split(l)[2], '@\(dispvm:\(@tag:\)\?\|tag:\)[0-9A-Za-z_-]\+'))
+    if len(split(l)[2]) == len(matchstr(split(l)[2], '^[0-9A-Za-z_-]\+$')) ||
+    \  len(split(l)[2]) == len(matchstr(split(l)[2], '^@\(dispvm:\(@tag:\)\?\|tag:\)[0-9A-Za-z_-]\+$'))
       let sources .= " ".split(l)[2]
     endif
-    if len(split(l)[3]) == len(matchstr(split(l)[3], '[0-9A-Za-z_-]\+')) ||
-    \  len(split(l)[3]) == len(matchstr(split(l)[3], '@\(dispvm:\(@tag:\)\?\|tag:\)[0-9A-Za-z_-]\+'))
+    if len(split(l)[3]) == len(matchstr(split(l)[3], '^[0-9A-Za-z_-]\+$')) ||
+    \  len(split(l)[3]) == len(matchstr(split(l)[3], '^@\(dispvm:\(@tag:\)\?\|tag:\)[0-9A-Za-z_-]\+$'))
       let destinations .= " ".split(l)[3]
+    endif
+    if len(split(l)) < 6
+      continue
+    endif
+    if split(l)[4] ==# "deny"
+      continue
+    endif
+    if split(l)[4] ==# "allow"
+      for p in split(l)[5:]
+        if len(p) == len(matchstr(p, '^\(user\|target\)=[0-9A-Za-z=@:_-]\+$'))
+          let allow_params .= " ".p
+        endif
+      endfor
+      continue
+    elseif split(l)[4] ==# "ask"
+      for p in split(l)[5:]
+        if len(p) == len(matchstr(p, '^\(user\|\(default_\)\?target\)=[0-9A-Za-z=@:_-]\+$'))
+        let ask_params .= " ".p
+        endif
+      endfor
+      continue
     endif
   endfor
 
