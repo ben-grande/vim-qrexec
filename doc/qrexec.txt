@@ -1,5 +1,5 @@
 *qrexec.txt*  A Qrexec companion for the policy breakers
-*qrexec* *qrexec.vim* *vim-qrexec*  Last Change:  2023 Jun 03
+*qrexec* *qrexec.vim* *vim-qrexec*  Last Change:  2023 Jun 05
 >
        ______     ______     ______     __  __     ______     ______
       /\  __ \   /\  == \   /\  ___\   /\_\_\_\   /\  ___\   /\  ___\
@@ -65,6 +65,12 @@ copy of the original, instead of saving the file in place to be linted,
 avoiding an erroneous file being applied just because you want it to be
 linted. All of the above methods utilize the |quickfix-window|.
 
+If you want to lint a policy that is embedded into another file type, such as
+Markdown fended code blocks, you can do so by linting the lines selected from
+Visual mode: >
+        :'<,'>w !qubes-policy-lint -
+        :'<,'>w !qubes-policy-lint --include-service -
+<
 SYNTAX                                                         *qrexec-syntax*
 
 The Qrexec parser is strict, so the syntax check must also be. The syntax
@@ -75,34 +81,34 @@ Every rule has a minimum and a maximum number of fields. While the line
 hasn't reached the least amount of fields, the last group is highlighted as
 incomplete:
 >
-  # qrexecpolicy
-  qubes.Example * @anyvm @default
-                         ^------^
+        # qrexecpolicy
+        qubes.Example * @anyvm @default
+                               ^------^
 
-  # qrexecpolicyservice
-  @anyvm @anyvm
-         ^----^
+        # qrexecpolicyservice
+        @anyvm @anyvm
+               ^----^
 
-  # qrexecconfig
-  wait-for-session =
-  ^---------------^
+        # qrexecconfig
+        wait-for-session =
+        ^---------------^
 <
 On the other side, if the maximum number of fields has been reached,
 everything after it will be highlighted as an error:
 >
-  # qrexecpolicy and qrexecpolicyservice
-  !include-dir directory/ example test
-                          ^----------^
+        # qrexecpolicy and qrexecpolicyservice
+        !include-dir directory/ example test
+                                ^----------^
 <
 Duplicated parameters are also highlighted as an error:
 >
-  # qrexecpolicy
-  qubes.Example * * * allow target=test autostart=no target=diff
-                                                     ^---------^
+        # qrexecpolicy
+        qubes.Example * * * allow target=test autostart=no target=diff
+                                                           ^---------^
 
-  # qrexecpolicyservice
-  * * deny notify=no notify=yes
-                     ^--------^
+        # qrexecpolicyservice
+        * * deny notify=no notify=yes
+                           ^--------^
 <
 The syntax check is extensive but not perfect, it might fail on some edge
 cases where showing the error by highlighting would not be clear enough. To
