@@ -3,7 +3,7 @@
 " Maintainer:   Ben Grande <ben.grande.b@gmail.com>
 " License:      Vim (see :h license)
 " Repository:   https://codeberg.org/ben.grande.b/vim-qrexec
-" Last Change:  2023 May 27
+" Last Change:  2023 Jun 05
 
 
 function! qrexeccomplete#Complete(findstart, base)
@@ -11,7 +11,8 @@ function! qrexeccomplete#Complete(findstart, base)
   if a:findstart
     let line = getline('.')
     let start = col('.') - 1
-    " Technically this could be '\k' if 'iskeyword' was set correctly.
+    " The pattern can't be '\k' because some characters aren't add to the
+    " 'iskeyword' option as it also affects commands.
     while start > 0 && line[start - 1] =~ '\S\+'
       let start -= 1
     endwhile
