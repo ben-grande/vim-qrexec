@@ -106,7 +106,7 @@ any&vm t=est deny
 ## Parameter permitted per resolution
 * * deny  notify=yes autostart=no user=user target=target default_target=test
 * * allow notify=yes autostart=no user=user target=target default_target=test
-* * ask   notify=yes autostart=no user=user target=target default_target=test
+* * ask  notify=yes autostart=no user=user target=target default_target=test a
 
 ## Parameter without argument is invalid
 * * ask   notify= autostart= user= target= default_target=
