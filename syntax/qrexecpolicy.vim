@@ -3,7 +3,7 @@
 " Maintainer:   Ben Grande <ben.grande.b@gmail.com>
 " License:      Vim (see :h license)
 " Repository:   https://codeberg.org/ben.grande.b/vim-qrexec
-" Last Change:  2023 Jun 05
+" Last Change:  2023 Oct 03
 
 
 " Section: To do
@@ -193,7 +193,7 @@ if &filetype ==# "qrexecpolicy"
   syn match qrexecpolicyInclDir
     \ '^\s*\zs!include-dir\ze\s\+\S'
     \ contains=@NoSpell
-    \ nextgroup=qrexecpolicyInclDirPath
+    \ nextgroup=qrexecpolicyInclFilePath
     \ skipwhite
 
 elseif &filetype ==# "qrexecpolicyservice"
@@ -267,12 +267,6 @@ syn match qrexecpolicyInclFilePath
   \ '\S\+'
   \ contained
   \ contains=qrexecpolicyInclFilePathError,@NoSpell
-  \ nextgroup=qrexecpolicyMustEndError
-
-syn match qrexecpolicyInclDirPath
-  \ '\S\+'
-  \ contained
-  \ contains=qrexecpolicyInclDirPathError,@NoSpell
   \ nextgroup=qrexecpolicyMustEndError
 
 " Section: Arg
@@ -627,11 +621,8 @@ syn match qrexecpolicyCharError
 syn match qrexecpolicyMustEndError
   \ '.*'
   \ contained
-  " \ '[^0-9A-Za-z/_.+-]'
+  " \ '\(\(include/[0-9A-Za-z_.+/-]\+\)\(\s\|$\)\)\@!\S*'
 syn match qrexecpolicyInclFilePathError
-  \ '\(\(include/[0-9A-Za-z_.+/-]\+\)\(\s\|$\)\)\@!\S*'
-  \ contained
-syn match qrexecpolicyInclDirPathError
   \ '[^0-9A-Za-z/_.+-]'
   \ contained
 syn match qrexecpolicyServiceGenericError
@@ -762,7 +753,6 @@ hi def link qrexecpolicyTargetIncomplete               qrexecpolicyIncomplete
 hi def link qrexecpolicyMustEndError                   qrexecpolicyError
 hi def link qrexecpolicyInclArgPrefixUnknownError      qrexecpolicyError
 hi def link qrexecpolicyInclFilePathError              qrexecpolicyError
-hi def link qrexecpolicyInclDirPathError               qrexecpolicyError
 hi def link qrexecpolicyCharError                      qrexecpolicyError
 hi def link qrexecpolicyServiceSpecificError           qrexecpolicyError
 hi def link qrexecpolicyServiceGenericError            qrexecpolicyError
