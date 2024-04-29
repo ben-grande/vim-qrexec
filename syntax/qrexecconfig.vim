@@ -3,7 +3,7 @@
 " Maintainer:   Ben Grande <ben.grande.b@gmail.com>
 " License:      Vim (see :h license)
 " Repository:   https://codeberg.org/ben.grande.b/vim-qrexec
-" Last Change:  2023 May 18
+" Last Change:  2024 Apr 29
 
 " Based on: https://github.com/DemiMarie/qubes-core-qrexec/commit/49ab526960690e7ace3a2437d97e92bac9b7f1da
 " TODO: after Demi's changes are accepted on
@@ -36,14 +36,14 @@ syn match qrexecconfigIncompleteError
   \ '^\s*\zs.*'
   \ contains=@NoSpell
 
-syn match qrexecconfigUnknownKeyError
+syn match qrexecconfigKeyUnknownError
   \ '^\s*\zs\S\+.*\ze='
   \ contains=@NoSpell
 
-syn match qrexecconfigBooleanIntegerKey
-  \ '^\s*\zs\(wait-for-session\)\ze\s*=\s*\S\+'
+syn match qrexecconfigBooleanKey
+  \ '^\s*\zs\(wait-for-session\|skip-service-descriptor\)\ze\s*=\s*\S\+'
   \ contains=@NoSpell
-  \ nextgroup=qrexecconfigBooleanIntegerAssign
+  \ nextgroup=qrexecconfigBooleanAssign
   \ skipwhite
 
 syn match qrexecconfigStringKey
@@ -54,30 +54,36 @@ syn match qrexecconfigStringKey
 
 
 " Section: Assign
-syn match qrexecconfigBooleanIntegerAssign
+syn match qrexecconfigBooleanAssign
   \ '\S'
   \ contained
   \ contains=qrexecconfigAssignError
-  \ nextgroup=qrexecconfigBooleanIntegerValue
+  \ nextgroup=qrexecconfigBooleanValue,qrexecconfigBooleanValueUnknownError
   \ skipwhite
 
 syn match qrexecconfigStringAssign
   \ '\S'
   \ contained
   \ contains=qrexecconfigAssignError
-  \ nextgroup=qrexecconfigStringValue,qrexecconfigStringValueUnknown
+  \ nextgroup=qrexecconfigStringValue,qrexecconfigStringValueUnknownError
   \ skipwhite
 
 
 " Section: Value
-syn match qrexecconfigBooleanIntegerValue
-  \ '\S'
+syn match qrexecconfigBooleanValueUnknownError
+  \ '\S\+.*'
   \ contained
-  \ contains=qrexecconfigBooleanIntegerValueError
+  \ contains=@NoSpell
+
+"   \ '\S'
+syn match qrexecconfigBooleanValue
+  \ '\(0\|1\|true\|false\)'
+  \ contained
+  \ contains=qrexecconfigBooleanValueError
   \ nextgroup=qrexecconfigMustEndError
   \ skipwhite
 
-syn match qrexecconfigStringValueUnknown
+syn match qrexecconfigStringValueUnknownError
   \ '\S\+'
   \ contained
   \ contains=@NoSpell
@@ -99,8 +105,9 @@ syn match qrexecconfigAssignError
   \ '\v\s@<=(\=\s*)@!\S*'
   \ contained
 
-syn match qrexecconfigBooleanIntegerValueError
-  \ '\v((0|1)\s*$)@!\S*'
+"   \ '\v((0|1|true|false)\s*$)@!\S*'
+syn match qrexecconfigBooleanValueError
+  \ '\v\s@<=((0|1|true|false)(\s|$))@!\S*'
   \ contained
 
 syn match qrexecconfigStringValueError
@@ -124,22 +131,23 @@ syn match qrexecconfigCommentModeline
 
 " Section: Highlight
 " Config Group
-hi def link qrexecconfigBooleanIntegerKey              qrexecconfigKey
+hi def link qrexecconfigBooleanKey                     qrexecconfigKey
 hi def link qrexecconfigStringKey                      qrexecconfigKey
 hi def link qrexecconfigCommentModeLine                qrexecconfigComment
 
 " Error Group
 hi def link qrexecconfigIncompleteError                qrexecconfigError
 hi def link qrexecconfigMustEndError                   qrexecconfigError
-hi def link qrexecconfigUnknownKeyError                qrexecconfigError
+hi def link qrexecconfigKeyUnknownError                qrexecconfigError
 hi def link qrexecconfigAssignError                    qrexecconfigError
-hi def link qrexecconfigBooleanIntegerValueError       qrexecconfigError
+hi def link qrexecconfigBooleanValueError              qrexecconfigError
+hi def link qrexecconfigBooleanValueUnknownError       qrexecconfigError
 hi def link qrexecconfigStringValueError               qrexecconfigError
-hi def link qrexecconfigStringValueUnknown             qrexecconfigError
+hi def link qrexecconfigStringValueUnknownError        qrexecconfigError
 
 " Reference Group
 hi def link qrexecconfigKey                            Identifier
-hi def link qrexecconfigBooleanIntegerValue            Number
+hi def link qrexecconfigBooleanValue                   Number
 hi def link qrexecconfigStringValue                    String
 hi def link qrexecconfigTodo                           Todo
 hi def link qrexecconfigComment                        Comment

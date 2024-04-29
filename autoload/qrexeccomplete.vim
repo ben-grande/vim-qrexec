@@ -3,7 +3,7 @@
 " Maintainer:   Ben Grande <ben.grande.b@gmail.com>
 " License:      Vim (see :h license)
 " Repository:   https://codeberg.org/ben.grande.b/vim-qrexec
-" Last Change:  2023 Jun 05
+" Last Change:  2024 Apr 28
 
 
 function! qrexeccomplete#Complete(findstart, base)
@@ -45,7 +45,7 @@ function! qrexeccomplete#Complete(findstart, base)
   let ask_params = allow_params." default_target= default_target=@adminvm"
   let ask_params ..= " default_target=@dispvm"
   let ask_params ..= " default_target=@dispvm:"
-  let config_keys = "user= wait-for-session="
+  let config_keys = "user= wait-for-session= skip-service-descriptor="
 
   " Section: Read buffer Data
   " Avoid slow completion by limiting how many lines to read from the buffer.

@@ -12,9 +12,11 @@ wait-for-session=0
 ## String values must be enclosed in single quotes.
 user='root'
 user   =   'user'
-## Boolean Integer values must be 0 or 1.
+## Boolean Integer values must be 0/1, true/false.
 wait-for-session=0
 wait-for-session  =   1
+skip-service-descriptor=false
+skip-service-descriptor  =  true
 ## }}}
 ## Invalid {{{
 ## Keys must be known.
@@ -22,22 +24,28 @@ user Y = 'user'
 useruser = 'user'
 wait-for-sessionX = 1
 wait-for-session X= 1
+skip-service-descriptor-
+skip-service-descriptors
 ## Assignment must be made.
 user
 wait-for-session
+skip-service-descriptor
 ## Value of assignment must also be made
 user =
 wait-for-session =
+skip-service-descriptor=
 ## Assignment must respect the value type, can't repeat the assignment sign.
-wait-for-session == 1
 user =='user'
-## Strings must be quoted.
+wait-for-session == 1
+skip-service-descriptor == 1
+## Strings must be single quoted.
 user = user
+user = "user"
 ## Strings must be quoted correctly, else, show the error.
 user = u'se'r
 ## If value is provided, it can't be empty.
 user = ''
-## Value can't also contain disallowed characters.
+## Value can't contain disallowed characters.
 user='u\ser'
 user = ' user '
 ## Nothing can come before the opening quote.
@@ -53,7 +61,14 @@ user = unfinished'
 wait-for-session = 2
 wait-for-session = -1
 wait-for-session = 11
-wait-for-session = 01
-wait-for-session = '1'
-wait-for-session = \1
+skip-service-descriptor = 01
+skip-service-descriptor = '1'
+skip-service-descriptor = \1
+## For Boolean Strings, block everything that is not false or true.
+wait-for-session = falsee
+wait-for-session = xtrue
+wait-for-session = very true
+skip-service-descriptor = very false
+skip-service-descriptor = 'true'
+skip-service-descriptor = false ok
 ## }}}
