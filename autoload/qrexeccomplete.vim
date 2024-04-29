@@ -3,7 +3,7 @@
 " Maintainer:   Ben Grande <ben.grande.b@gmail.com>
 " License:      Vim (see :h license)
 " Repository:   https://codeberg.org/ben.grande.b/vim-qrexec
-" Last Change:  2024 Apr 28
+" Last Change:  2024 Apr 29
 
 
 function! qrexeccomplete#Complete(findstart, base)
@@ -45,7 +45,9 @@ function! qrexeccomplete#Complete(findstart, base)
   let ask_params = allow_params." default_target= default_target=@adminvm"
   let ask_params ..= " default_target=@dispvm"
   let ask_params ..= " default_target=@dispvm:"
-  let config_keys = "user= wait-for-session= skip-service-descriptor="
+  let config_keys = "user= wait-for-session=false wait-for-session=true"
+  let config_keys ..= " skip-service-descriptor=false"
+  let config_keys ..= " skip-service-descriptor=true"
 
   " Section: Read buffer Data
   " Avoid slow completion by limiting how many lines to read from the buffer.
@@ -71,10 +73,10 @@ function! qrexeccomplete#Complete(findstart, base)
       if len(split(l)) < 4
         continue
       endif
-      if len(split(l)[1]) == len(matchstr(split(l)[1], '^[0-9A-Za-z_.*-]\+$'))
+      if len(split(l)[1]) == len(matchstr(split(l)[1], '^\([0-9A-Za-z_.-]\+\|*\)$'))
         let incl_services .= " ".split(l)[1]
       endif
-      if len(split(l)[2]) == len(matchstr(split(l)[2], '^[0-9A-Za-z_.*+-]\+$'))
+      if len(split(l)[2]) == len(matchstr(split(l)[2], '^\(+[0-9A-Za-z_.-]\+\|*\)$'))
         let incl_arguments .= " ".split(l)[2]
       endif
       if len(split(l)[3]) == len(matchstr(split(l)[3], '^[0-9A-Za-z/_.-]\+$'))
@@ -128,10 +130,10 @@ function! qrexeccomplete#Complete(findstart, base)
     if len(split(l)) < 5
       continue
     endif
-    if len(split(l)[0]) == len(matchstr(split(l)[0], '^[0-9A-Za-z_.*-]\+$'))
+    if len(split(l)[0]) == len(matchstr(split(l)[0], '^\([0-9A-Za-z_.-]\+\|*\)$'))
       let services .= " ".split(l)[0]
     endif
-    if len(split(l)[1]) == len(matchstr(split(l)[1], '^[0-9A-Za-z_.*+-]\+$'))
+    if len(split(l)[1]) == len(matchstr(split(l)[1], '^\(+[0-9A-Za-z_.-]\+\|*\)$'))
       let arguments .= " ".split(l)[1]
     endif
     if len(split(l)[2]) == len(matchstr(split(l)[2], '^[0-9A-Za-z_-]\+$')) ||
@@ -222,7 +224,12 @@ function! qrexeccomplete#Complete(findstart, base)
     " Directive Include Service: 2nd field
     let field_match = matchstr(line, '^\s*\S\+\s\+\S\+\s\+\S*$')
     if field_match != ""
-      for m in sort(split(incl_arguments))
+      if split(line)[1] ==# "*"
+        let cur_items = "*"
+      else
+        let cur_items = incl_arguments
+      endif
+      for m in sort(split(cur_items))
         if stridx(m, a:base) == 0
           call add(res, m)
         endif
@@ -245,15 +252,16 @@ function! qrexeccomplete#Complete(findstart, base)
   " Section: 2nd field - Policy and Policy Service
   let field_match = matchstr(line, '^\s*\S\+\s\+\S*$')
   if field_match != ""
-    if &filetype ==# "qrexecpolicyservice"
-      for m in sort(split(destinations))
-        if stridx(m, a:base) == 0
-          call add(res, m)
-        endif
-      endfor
-      return res
+    if split(line)[0] ==# "*"
+      let cur_items = "*"
+    else
+      if &filetype ==# "qrexecpolicyservice"
+        let cur_items = destinations
+      else
+        let cur_items = arguments
+      endif
     endif
-    for m in sort(split(arguments))
+    for m in sort(split(cur_items))
       if stridx(m, a:base) == 0
         call add(res, m)
       endif

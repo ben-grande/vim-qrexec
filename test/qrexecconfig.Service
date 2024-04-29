@@ -8,7 +8,6 @@ user='user'
 user = 'root'
 wait-for-session = 0
 wait-for-session=0
-
 ## String values must be enclosed in single quotes.
 user='root'
 user   =   'user'
