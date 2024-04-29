@@ -2,7 +2,17 @@
 
 A Qrexec companion for the policy breakers.
 
-Repository: https://codeberg.org/ben.grande.b/vim-qrexec
+Repository:
+- https://codeberg.org/ben.grande.b/vim-qrexec
+- https://github.com/ben.grande.b/vim-qrexec
+
+## Table of Contents
+
+* [Features](#features)
+* [Requirements](#requirements)
+* [Installation](#installation)
+* [Usage](#usage)
+* [License](#license)
 
 ## Features
 
