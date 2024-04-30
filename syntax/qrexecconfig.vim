@@ -3,7 +3,7 @@
 " Maintainer:   Ben Grande <ben.grande.b@gmail.com>
 " License:      Vim (see :h license)
 " Repository:   https://codeberg.org/ben.grande.b/vim-qrexec
-" Last Change:  2024 Apr 29
+" Last Change:  2024 Apr 30
 
 " Based on: https://github.com/DemiMarie/qubes-core-qrexec/commit/49ab526960690e7ace3a2437d97e92bac9b7f1da
 " TODO: after Demi's changes are accepted on
@@ -47,7 +47,7 @@ syn match qrexecconfigBooleanKey
   \ skipwhite
 
 syn match qrexecconfigStringKey
-  \ /^\s*\zs\(user\)\ze\s*=\s*\S\+/
+  \ /^\s*\zs\(force-user\)\ze\s*=\s*\S\+/
   \ contains=@NoSpell
   \ nextgroup=qrexecconfigStringAssign
   \ skipwhite
@@ -71,11 +71,12 @@ syn match qrexecconfigStringAssign
 
 " Section: Value
 syn match qrexecconfigBooleanValueUnknownError
-  \ '\S\+.*'
+  \ '\S\+'
   \ contained
   \ contains=@NoSpell
 
-"   \ '\S'
+" Boolean values 0/1 are backwards compatibility for skip-service-descriptor
+" and wait-for-session.
 syn match qrexecconfigBooleanValue
   \ '\(0\|1\|true\|false\)'
   \ contained
@@ -105,7 +106,6 @@ syn match qrexecconfigAssignError
   \ '\v\s@<=(\=\s*)@!\S*'
   \ contained
 
-"   \ '\v((0|1|true|false)\s*$)@!\S*'
 syn match qrexecconfigBooleanValueError
   \ '\v\s@<=((0|1|true|false)(\s|$))@!\S*'
   \ contained

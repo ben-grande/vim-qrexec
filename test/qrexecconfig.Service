@@ -4,13 +4,13 @@
 
 ## Valid {{{
 ## Key, assignment and value can optionally be separated with whitespace.
-user='user'
-user = 'root'
+force-user='user'
+force-user = 'root'
 wait-for-session = 0
 wait-for-session=0
 ## String values must be enclosed in single quotes.
-user='root'
-user   =   'user'
+force-user='root'
+force-user   =   'user'
 ## Boolean Integer values must be 0/1, true/false.
 wait-for-session=0
 wait-for-session  =   1
@@ -19,43 +19,43 @@ skip-service-descriptor  =  true
 ## }}}
 ## Invalid {{{
 ## Keys must be known.
-user Y = 'user'
-useruser = 'user'
+force-user Y = 'user'
+force-useruser = 'user'
 wait-for-sessionX = 1
 wait-for-session X= 1
 skip-service-descriptor-
 skip-service-descriptors
 ## Assignment must be made.
-user
+force-user
 wait-for-session
 skip-service-descriptor
 ## Value of assignment must also be made
-user =
+force-user =
 wait-for-session =
 skip-service-descriptor=
 ## Assignment must respect the value type, can't repeat the assignment sign.
-user =='user'
+force-user =='user'
 wait-for-session == 1
 skip-service-descriptor == 1
 ## Strings must be single quoted.
-user = user
-user = "user"
+force-user = user
+force-user = "user"
 ## Strings must be quoted correctly, else, show the error.
-user = u'se'r
+force-user = u'se'r
 ## If value is provided, it can't be empty.
-user = ''
+force-user = ''
 ## Value can't contain disallowed characters.
-user='u\ser'
-user = ' user '
+force-user='u\ser'
+force-user = ' user '
 ## Nothing can come before the opening quote.
-user = a 't'
-user = a't'
+force-user = a 't'
+force-user = a't'
 ## Nothing can come after the closing quote.
-user = 'u'ser
-user = 'u'a'
+force-user = 'u'ser
+force-user = 'u'a'
 ## Unterminated quoted string is also shown.
-user = 'unfinished
-user = unfinished'
+force-user = 'unfinished
+force-user = unfinished'
 ## For Boolean Integers, block everything that is not 0 or 1.
 wait-for-session = 2
 wait-for-session = -1
