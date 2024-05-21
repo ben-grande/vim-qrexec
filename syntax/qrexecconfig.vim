@@ -3,7 +3,7 @@
 " Maintainer:   Ben Grande <ben.grande.b@gmail.com>
 " License:      Vim (see :h license)
 " Repository:   https://codeberg.org/ben.grande.b/vim-qrexec
-" Last Change:  2024 Apr 30
+" Last Change:  2024 May 21
 
 " Based on: https://github.com/DemiMarie/qubes-core-qrexec/commit/49ab526960690e7ace3a2437d97e92bac9b7f1da
 " TODO: after Demi's changes are accepted on
@@ -41,9 +41,15 @@ syn match qrexecconfigKeyUnknownError
   \ contains=@NoSpell
 
 syn match qrexecconfigBooleanKey
-  \ '^\s*\zs\(wait-for-session\|skip-service-descriptor\)\ze\s*=\s*\S\+'
+  \ '^\s*\zs\(skip-service-descriptor\|exit-on-\(client\|service\)-eof\)\ze\s*=\s*\S\+'
   \ contains=@NoSpell
   \ nextgroup=qrexecconfigBooleanAssign
+  \ skipwhite
+
+syn match qrexecconfigBooleanCompatKey
+  \ '^\s*\zs\(wait-for-session\)\ze\s*=\s*\S\+'
+  \ contains=@NoSpell
+  \ nextgroup=qrexecconfigBooleanAssignCompat
   \ skipwhite
 
 syn match qrexecconfigStringKey
@@ -61,6 +67,13 @@ syn match qrexecconfigBooleanAssign
   \ nextgroup=qrexecconfigBooleanValue,qrexecconfigBooleanValueUnknownError
   \ skipwhite
 
+syn match qrexecconfigBooleanAssignCompat
+  \ '\S'
+  \ contained
+  \ contains=qrexecconfigAssignError
+  \ nextgroup=qrexecconfigBooleanValueCompat,qrexecconfigBooleanValueUnknownError
+  \ skipwhite
+
 syn match qrexecconfigStringAssign
   \ '\S'
   \ contained
@@ -75,12 +88,17 @@ syn match qrexecconfigBooleanValueUnknownError
   \ contained
   \ contains=@NoSpell
 
-" Boolean values 0/1 are backwards compatibility for skip-service-descriptor
-" and wait-for-session.
 syn match qrexecconfigBooleanValue
-  \ '\(0\|1\|true\|false\)'
+  \ '\(true\|false\)'
   \ contained
   \ contains=qrexecconfigBooleanValueError
+  \ nextgroup=qrexecconfigMustEndError
+  \ skipwhite
+
+syn match qrexecconfigBooleanValueCompat
+  \ '\(0\|1\|true\|false\)'
+  \ contained
+  \ contains=qrexecconfigBooleanValueCompatError
   \ nextgroup=qrexecconfigMustEndError
   \ skipwhite
 
@@ -110,6 +128,10 @@ syn match qrexecconfigBooleanValueError
   \ '\v\s@<=((0|1|true|false)(\s|$))@!\S*'
   \ contained
 
+syn match qrexecconfigBooleanCompatValueError
+  \ '\v\s@<=((0|1|true|false)(\s|$))@!\S*'
+  \ contained
+
 syn match qrexecconfigStringValueError
   \ /[^0-9A-Za-z_.'-]/
   \ contained
@@ -132,6 +154,7 @@ syn match qrexecconfigCommentModeline
 " Section: Highlight
 " Config Group
 hi def link qrexecconfigBooleanKey                     qrexecconfigKey
+hi def link qrexecconfigBooleanCompatKey               qrexecconfigKey
 hi def link qrexecconfigStringKey                      qrexecconfigKey
 hi def link qrexecconfigCommentModeLine                qrexecconfigComment
 
@@ -140,6 +163,7 @@ hi def link qrexecconfigIncompleteError                qrexecconfigError
 hi def link qrexecconfigMustEndError                   qrexecconfigError
 hi def link qrexecconfigKeyUnknownError                qrexecconfigError
 hi def link qrexecconfigAssignError                    qrexecconfigError
+hi def link qrexecconfigBooleanValueCompatError        qrexecconfigError
 hi def link qrexecconfigBooleanValueError              qrexecconfigError
 hi def link qrexecconfigBooleanValueUnknownError       qrexecconfigError
 hi def link qrexecconfigStringValueError               qrexecconfigError
@@ -148,6 +172,7 @@ hi def link qrexecconfigStringValueUnknownError        qrexecconfigError
 " Reference Group
 hi def link qrexecconfigKey                            Identifier
 hi def link qrexecconfigBooleanValue                   Number
+hi def link qrexecconfigBooleanValueCompat             Number
 hi def link qrexecconfigStringValue                    String
 hi def link qrexecconfigTodo                           Todo
 hi def link qrexecconfigComment                        Comment

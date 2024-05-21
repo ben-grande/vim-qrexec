@@ -3,7 +3,7 @@
 " Maintainer:   Ben Grande <ben.grande.b@gmail.com>
 " License:      Vim (see :h license)
 " Repository:   https://codeberg.org/ben.grande.b/vim-qrexec
-" Last Change:  2024 Apr 30
+" Last Change:  2024 May 19
 
 
 function! qrexeccomplete#Complete(findstart, base)
@@ -45,7 +45,10 @@ function! qrexeccomplete#Complete(findstart, base)
   let ask_params = allow_params." default_target= default_target=@adminvm"
   let ask_params ..= " default_target=@dispvm"
   let ask_params ..= " default_target=@dispvm:"
-  let config_keys = "force-user= wait-for-session=false wait-for-session=true"
+  let config_keys = "force-user="
+  let config_keys ..= " exit-on-client-eof=false exit-on-client-eof=true"
+  let config_keys ..= " exit-on-service-eof=false exit-on-service-eof=true"
+  let config_keys ..= " wait-for-session=false wait-for-session=true"
   let config_keys ..= " skip-service-descriptor=false"
   let config_keys ..= " skip-service-descriptor=true"
 
