@@ -1,5 +1,5 @@
 *qrexec.txt*  A Qrexec companion for the policy breakers
-*qrexec* *qrexec.vim* *vim-qrexec*  Last Change:  2024 Apr 29
+*qrexec* *qrexec.vim* *vim-qrexec*  Last Change:  2024 Sep 25
 >
        ______     ______     ______     __  __     ______     ______
       /\  __ \   /\  == \   /\  ___\   /\_\_\_\   /\  ___\   /\  ___\
@@ -36,9 +36,15 @@ is removed. With the vimfiles provided by this plugin, you can greatly
 decrease the chances of breaking your inter-qube connections.
 
 Available file types and directories where they are detected automatically:
-- qrexecpolicy:        /etc/qubes/policy.d/*.policy
-- qrexecpolicyservice: /etc/qubes/policy.d/include/*
-- qrexecconfig:        /etc/qubes/rpc-config/*
+
+- qrexecpolicy:~
+        /etc/qubes/policy.d/*.policy
+        /run/qubes/policy.d/*.policy
+- qrexecpolicyservice:~
+        /etc/qubes/policy.d/include/*
+        /run/qubes/policy.d/include/*
+- qrexecconfig:~
+        /etc/qubes/rpc-config/*
 
 The source code is available at https://codeberg.org/ben.grande.b/vim-qrexec
 and at https://github.com/ben-grande/vim-qrexec
