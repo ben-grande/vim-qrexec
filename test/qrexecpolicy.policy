@@ -44,12 +44,16 @@
 
 ## Service name, Argument and @token in target and default_target
 local-09.Service  *         source dest deny notify=no
-qrexec_Service    +         source dest ask target=@dispvm:test default_target=@dispvm
-local.Service     ++_-.arg  source dest allow target=@dispvm:test
-qrexec_Service    +         source dom0 ask target=@adminvm default_target=@adminvm
 local.Service     +         source dom0 allow target=@adminvm
+local.Service     ++_-.arg  source dest allow target=@dispvm:test
+qrexec_Service    +         source dest allow target=@dispvm:uuid:12345678-abcd-abcd-abcd-12345678abcd
+qrexec_Service    +         source dest allow target=uuid:12345678-abcd-abcd-abcd-12345678abcd
+qrexec_Service    +         source dom0 ask target=@adminvm default_target=@adminvm
+qrexec_Service    +         source dest ask target=@dispvm:test default_target=@dispvm
+qrexec_Service    +         source dest ask target=@dispvm:uuid:12345678-abcd-abcd-abcd-12345678abcd default_target=@dispvm:12345678-abcd-abcd-abcd-12345678abcd
+qrexec_Service    +         source dest ask target=uuid:12345678-abcd-abcd-abcd-12345678abcd default_target=uuid:12345678-abcd-abcd-abcd-12345678abcd
 
-## Source and Destination with catch all and @tokens
+## Source and Destination with catch all, literal names, UUID and @tokens
 *               *   *                   *                   deny
 qrexec.Service  *   @adminvm            @adminvm            deny
 qrexec.Service  *   @anyvm              @anyvm              deny
@@ -63,6 +67,7 @@ qrexec.Service  *   @type:AppVM         @type:AppVM         deny
 qrexec.Service  *   @type:DispVM        @type:DispVM        deny
 qrexec.Service  *   @type:StandaloneVM  @type:StandaloneVM  deny
 qrexec.Service  *   @type:TemplateVM    @type:TemplateVM    deny
+qrexec.Service  *   uuid:12345678-abcd-abcd-abcd-12345678abcd @dispvm:uuid:12345678-abcd-abcd-abcd-12345678abcd deny
 
 ## }}}
 ## Invalid {{{
@@ -123,6 +128,7 @@ q.T  *   source dest
 * + * * deny
 * ** * * deny
 * * * * deny
+
 ## Service Test
 09AZaz_.+-><a/?\a'"=~a!@#$a%^&*a()[a]{} * * * deny
 
@@ -139,6 +145,12 @@ test +test.+-/!&oh*)error * * deny
 ## Literal Source and Destination Test
 * * ** test-m@e deny
 * * any&vm t=est deny
+
+## UUID Source and Destination Test
+* * a uuuid:12345678-abcd-abcd-abcd-12345678abcd         deny
+* * uuid::12345678-abcd-abcd-abcd-12345678abcd a         deny
+* * a @dispvm:uuid:g2345678-abcd-abcd-abcd-12345678abcd deny
+* * @dispvm:uuid:12345678-abcd-abcd-abcd-12345678abcd1 a deny
 
 ## Token Source and Destination Test
 * * @anyvmm       @anyvm deny
@@ -177,6 +189,10 @@ test +test.+-/!&oh*)error * * deny
 * * * * ask notify=yesyes autostart=nno
 * * * * ask notify=noo    autostart=nono
 * * * * ask notify=-.+@!   autostart=/*!@%&
+
+## Target UUID parameters Test
+* * * * ask target=@dispvm:uuid: default_target=@dispvm:uuid:a
+* * * * ask target=uuid: default_target=uuid:a
 
 ## Target @token parameters Test
 * * * * ask target=@dispvm: default_target=@dispvmm

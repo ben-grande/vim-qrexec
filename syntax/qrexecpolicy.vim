@@ -3,7 +3,7 @@
 " Maintainer:   Ben Grande <ben.grande.b@gmail.com>
 " License:      Vim (see :h license)
 " Repository:   https://codeberg.org/ben.grande.b/vim-qrexec
-" Last Change:  2023 Oct 03
+" Last Change:  2024 Oct 11
 
 
 " Section: To do
@@ -29,18 +29,18 @@
 "     Incomplete Item: Unterminated rule; and
 "     Unknown Item: Invalid value.
 " Service:
-"   Literal Name: character range; and
+"   Literal Name: char range; and
 "   Catch All: '*', its argument must also be '*'.
 " Argument:
-"   Literal Name: ; and
+"   Literal Name: char range; and
 "   Catch All: '*', its argument must also be '*'.
 " Source:
-"   Literal Name: character range;
+"   Literal Name: char range on name or uuid;
 "   Catch All: '*';
 "   Token Single: @adminvm, @anyvm; and
 "   Token Combo: @dispvm:VMNAME, @dispvm:@tag:TAG, @tag:TAG, @type:TYPE.
 " Target:
-"   Literal Name: character range;
+"   Literal Name: char range on name or uuid;
 "   Catch All: '*';
 "   Token Single: @adminvm, @anyvm, @default, @dispvm; and
 "   Token Combo: @dispvm:VMNAME, @dispvm:@tag:TAG, @tag:TAG, @type:TYPE.
@@ -48,9 +48,11 @@
 " Parameter:
 "   Autostart: yes, no;
 "   Notify: yes, no;
-"   User: character range;
-"   Target: character range, '*', @adminvm, @dispvm, @dispvm:VMNAME; and
-"   Default Target: character range, '*', @adminvm, @dispvm, @dispvm:VMNAME.
+"   User: char range;
+"   Target: char range, uuid, '*', @adminvm, @dispvm, @dispvm:VMNAME,
+"   @dispvm:uuid:; and
+"   Default Target: char range uuid, '*', @adminvm, @dispvm, @dispvm:VMNAME
+"   @dispvm:uuid.
 " Parameters Verification:
 "   Duplicated Parameters: forbidden;
 "   Deny: notify=;
@@ -58,8 +60,9 @@
 "   Ask: previous parameters + default_target=.
 " Token Argument Verification:
 "   Type: AdminVM, AppVM, DispVM, StandaloneVM, TemplateVM;
-"   Tag: character range; and
-"   Name: character range.
+"   Tag: char range; and
+"   Name: char range.
+"   UUID: char range with strict format
 
 
 " Section: Bootstrap
@@ -103,6 +106,7 @@ syn cluster qrexecpolicySourceGroup
   \ add=qrexecpolicySourceTokenSingle
   \ add=qrexecpolicySourceTokenComboNormal
   \ add=qrexecpolicySourceTokenComboType
+  \ add=qrexecpolicySourceUuid
 
 syn cluster qrexecpolicyTargetGroup
   \ add=qrexecpolicyTargetIncomplete
@@ -111,6 +115,7 @@ syn cluster qrexecpolicyTargetGroup
   \ add=qrexecpolicyTargetTokenSingle
   \ add=qrexecpolicyTargetTokenComboNormal
   \ add=qrexecpolicyTargetTokenComboType
+  \ add=qrexecpolicyTargetUuid
 
 syn cluster qrexecpolicyResolutionGroup
   \ add=qrexecpolicyResolutionUnknownError
@@ -139,10 +144,12 @@ syn cluster qrexecpolicyParamAskTargetArgGroup
   \ add=qrexecpolicyParamAskTargetArgLiteral
   \ add=qrexecpolicyParamAskTargetArgTokenSingle
   \ add=qrexecpolicyParamAskTargetArgTokenCombo
+  \ add=qrexecpolicyParamAskTargetArgUuid
 syn cluster qrexecpolicyParamAllowTargetArgGroup
   \ add=qrexecpolicyParamAllowTargetArgLiteral
   \ add=qrexecpolicyParamAllowTargetArgTokenSingle
   \ add=qrexecpolicyParamAllowTargetArgTokenCombo
+  \ add=qrexecpolicyParamAllowTargetArgUuid
 
 syn cluster qrexecpolicyParamDenyDupErrorGroup
   \ add=qrexecpolicyParamDupNotifyError
@@ -315,7 +322,7 @@ syn match qrexecpolicySourceIncomplete
 syn match qrexecpolicySourceLiteral
   \ '\S\+\ze\s\+\S'
   \ contained
-  \ contains=qrexecpolicySourceLiteralError,@NoSpell
+  \ contains=qrexecpolicyLiteralError,@NoSpell
   \ nextgroup=@qrexecpolicyTargetGroup
   \ skipwhite
 
@@ -357,6 +364,18 @@ syn match qrexecpolicySourceTokenComboTypeArg
   \ nextgroup=@qrexecpolicyTargetGroup
   \ skipwhite
 
+syn match qrexecpolicySourceUuid
+  \ '\(@dispvm:\)\?uuid:\ze\S\+\s\+\S'
+  \ contained
+  \ contains=qrexecpolicyUuidError,@NoSpell
+  \ nextgroup=qrexecpolicySourceUuidArg
+syn match qrexecpolicySourceUuidArg
+  \ '\S*'
+  \ contained
+  \ contains=qrexecpolicyUuidArgError,@NoSpell
+  \ nextgroup=@qrexecpolicyTargetGroup
+  \ skipwhite
+
 
 " Section: Target
 syn match qrexecpolicyTargetIncomplete
@@ -369,7 +388,7 @@ syn match qrexecpolicyTargetIncomplete
 syn match qrexecpolicyTargetLiteral
   \ '\S\+\ze\s\+\S'
   \ contained
-  \ contains=qrexecpolicyTargetLiteralError,@NoSpell
+  \ contains=qrexecpolicyLiteralError,@NoSpell
   \ nextgroup=@qrexecpolicyResolutionGroup
   \ skipwhite
 
@@ -408,6 +427,18 @@ syn match qrexecpolicyTargetTokenComboTypeArg
   \ '\S*'
   \ contained
   \ contains=qrexecpolicyTokenComboTypeArgError,@NoSpell
+  \ nextgroup=@qrexecpolicyResolutionGroup
+  \ skipwhite
+
+syn match qrexecpolicyTargetUuid
+  \ '\(@dispvm:\)\?uuid:\ze\S\+\s\+\S'
+  \ contained
+  \ contains=qrexecpolicyUuidError,@NoSpell
+  \ nextgroup=qrexecpolicyTargetUuidArg
+syn match qrexecpolicyTargetUuidArg
+  \ '\S*'
+  \ contained
+  \ contains=qrexecpolicyUuidArgError,@NoSpell
   \ nextgroup=@qrexecpolicyResolutionGroup
   \ skipwhite
 
@@ -579,6 +610,17 @@ syn match qrexecpolicyParamAllowTargetArgTokenComboArg
   \ contains=qrexecpolicyTokenComboArgError,@NoSpell
   \ nextgroup=@qrexecpolicyParamAllowGroup
   \ skipwhite
+syn match qrexecpolicyParamAllowTargetArgUuid
+  \ '\(@dispvm:\)\?uuid:\ze\S\+'
+  \ contained
+  \ contains=qrexecpolicyUuidError,@NoSpell
+  \ nextgroup=qrexecpolicyParamAskTargetArgUuidArg
+syn match qrexecpolicyParamAskTargetArgUuidArg
+  \ '\S*'
+  \ contained
+  \ contains=qrexecpolicyUuidArgError,@NoSpell
+  \ nextgroup=@qrexecpolicyParamAskGroup
+  \ skipwhite
 
 syn match qrexecpolicyParamAskTarget
   \ '\(target\ze=\S\+\|default_target\ze=\S\+\)'
@@ -612,6 +654,17 @@ syn match qrexecpolicyParamAskTargetArgTokenComboArg
   \ contains=qrexecpolicyTokenComboArgError,@NoSpell
   \ nextgroup=@qrexecpolicyParamAskGroup
   \ skipwhite
+syn match qrexecpolicyParamAskTargetArgUuid
+  \ '\(@dispvm:\)\?uuid:\ze\S\+'
+  \ contained
+  \ contains=qrexecpolicyUuidError,@NoSpell
+  \ nextgroup=qrexecpolicyParamAskTargetArgUuidArg
+syn match qrexecpolicyParamAskTargetArgUuidArg
+  \ '\S*'
+  \ contained
+  \ contains=qrexecpolicyUuidArgError,@NoSpell
+  \ nextgroup=@qrexecpolicyParamAskGroup
+  \ skipwhite
 
 
 " Section: Errors
@@ -621,7 +674,6 @@ syn match qrexecpolicyCharError
 syn match qrexecpolicyMustEndError
   \ '.*'
   \ contained
-  " \ '\(\(include/[0-9A-Za-z_.+/-]\+\)\(\s\|$\)\)\@!\S*'
 syn match qrexecpolicyInclFilePathError
   \ '[^0-9A-Za-z/_.+-]'
   \ contained
@@ -641,10 +693,13 @@ syn match qrexecpolicyArgPrefixSpecificError
 syn match qrexecpolicyArgError
   \ '[^0-9A-Za-z+_.-]'
   \ contained
-syn match qrexecpolicySourceLiteralError
-  \ '[^0-9A-Za-z_-]'
+syn match qrexecpolicyUuidError
+  \ '\v\s@<=((\@dispvm:)?uuid:)@!\S*'
   \ contained
-syn match qrexecpolicyTargetLiteralError
+syn match qrexecpolicyUuidArgError
+  \ '\v(uuid:)@<=([0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}\ze(\s|$))@!\S*'
+  \ contained
+syn match qrexecpolicyLiteralError
   \ '[^0-9A-Za-z_-]'
   \ contained
 syn match qrexecpolicyTokenSingleError
@@ -718,28 +773,32 @@ hi def link qrexecpolicyServiceGeneric                 qrexecpolicySpecialChar
 hi def link qrexecpolicyArgPrefix                      qrexecpolicySpecialChar
 hi def link qrexecpolicyArgPrefixGeneric               qrexecpolicyArgPrefix
 hi def link qrexecpolicyArgPrefixSpecific              qrexecpolicyArgPrefix
-hi def link qrexecpolicySourceTokenSingle              qrexecpolicyToken
 hi def link qrexecpolicySourceGeneric                  qrexecpolicySpecialChar
+hi def link qrexecpolicySourceTokenSingle              qrexecpolicyToken
 hi def link qrexecpolicySourceTokenComboNormal         qrexecpolicyToken
 hi def link qrexecpolicySourceTokenComboType           qrexecpolicyToken
+hi def link qrexecpolicySourceUuid                     qrexecpolicyToken
 hi def link qrexecpolicyTargetTokenSingle              qrexecpolicyToken
 hi def link qrexecpolicyTargetGeneric                  qrexecpolicySpecialChar
 hi def link qrexecpolicyTargetTokenComboNormal         qrexecpolicyToken
 hi def link qrexecpolicyTargetTokenComboType           qrexecpolicyToken
-hi def link qrexecpolicyResolutionAsk                  qrexecpolicyResolution
-hi def link qrexecpolicyResolutionAllow                qrexecpolicyResolution
+hi def link qrexecpolicyTargetUuid                     qrexecpolicyToken
 hi def link qrexecpolicyResolutionDeny                 qrexecpolicyResolution
-hi def link qrexecpolicyParamAllowNormal               qrexecpolicyParam
-hi def link qrexecpolicyParamAskNormal                 qrexecpolicyParam
-hi def link qrexecpolicyParamAllowTarget               qrexecpolicyParam
-hi def link qrexecpolicyParamAskTarget                 qrexecpolicyParam
+hi def link qrexecpolicyResolutionAllow                qrexecpolicyResolution
+hi def link qrexecpolicyResolutionAsk                  qrexecpolicyResolution
 hi def link qrexecpolicyParamDenyBoolean               qrexecpolicyParam
+hi def link qrexecpolicyParamAllowNormal               qrexecpolicyParam
+hi def link qrexecpolicyParamAllowTarget               qrexecpolicyParam
 hi def link qrexecpolicyParamAllowBoolean              qrexecpolicyParam
-hi def link qrexecpolicyParamAskBoolean                qrexecpolicyParam
 hi def link qrexecpolicyParamAllowTargetArgTokenSingle qrexecpolicyToken
 hi def link qrexecpolicyParamAllowTargetArgTokenCombo  qrexecpolicyToken
+hi def link qrexecpolicyParamAllowTargetArgUuid        qrexecpolicyToken
+hi def link qrexecpolicyParamAskBoolean                qrexecpolicyParam
+hi def link qrexecpolicyParamAskNormal                 qrexecpolicyParam
+hi def link qrexecpolicyParamAskTarget                 qrexecpolicyParam
 hi def link qrexecpolicyParamAskTargetArgTokenSingle   qrexecpolicyToken
 hi def link qrexecpolicyParamAskTargetArgTokenCombo    qrexecpolicyToken
+hi def link qrexecpolicyParamAskTargetArgUuid          qrexecpolicyToken
 
 " Incomplete Group
 hi def link qrexecpolicyRuleIncomplete                 qrexecpolicyIncomplete
@@ -760,8 +819,8 @@ hi def link qrexecpolicyArgPrefixUnknownError          qrexecpolicyError
 hi def link qrexecpolicyArgPrefixGenericError          qrexecpolicyError
 hi def link qrexecpolicyArgPrefixSpecificError         qrexecpolicyError
 hi def link qrexecpolicyArgError                       qrexecpolicyError
-hi def link qrexecpolicySourceLiteralError             qrexecpolicyError
-hi def link qrexecpolicyTargetLiteralError             qrexecpolicyError
+hi def link qrexecpolicyUuidArgError                   qrexecpolicyError
+hi def link qrexecpolicyLiteralError                   qrexecpolicyError
 hi def link qrexecpolicyTokenSingleError               qrexecpolicyError
 hi def link qrexecpolicyTokenComboError                qrexecpolicyError
 hi def link qrexecpolicyTokenComboArgError             qrexecpolicyError

@@ -3,7 +3,7 @@
 " Maintainer:   Ben Grande <ben.grande.b@gmail.com>
 " License:      Vim (see :h license)
 " Repository:   https://codeberg.org/ben.grande.b/vim-qrexec
-" Last Change:  2024 May 19
+" Last Change:  2024 Oct 11
 
 
 function! qrexeccomplete#Complete(findstart, base)
@@ -33,18 +33,18 @@ function! qrexeccomplete#Complete(findstart, base)
   let incl_services = services
   let arguments = "* +"
   let incl_arguments = arguments
-  let sources = "* @adminvm @anyvm @dispvm: @dispvm:@tag: @tag:"
+  let sources = "* uuid: @adminvm @anyvm @dispvm: @dispvm:uuid: @dispvm:@tag:"
   let sources ..= " @type:AdminVM @type:AppVM @type:DispVM @type:StandaloneVM"
-  let sources ..= " @type:TemplateVM"
+  let sources ..= " @type:TemplateVM @tag:"
   let destinations = sources." @default @dispvm"
   let resolutions = "deny allow ask"
   let deny_params = "notify=yes notify=no"
   let allow_params = deny_params." user= autostart=yes autostart=no target="
-  let allow_params ..= " target=@adminvm target=@dispvm"
-  let allow_params ..= " target=@dispvm:"
+  let allow_params ..= " target=@adminvm target=@dispvm target=@dispvm:"
+  let allow_params ..= " target=uuid: target=@dispvm:uuid:"
   let ask_params = allow_params." default_target= default_target=@adminvm"
-  let ask_params ..= " default_target=@dispvm"
-  let ask_params ..= " default_target=@dispvm:"
+  let ask_params ..= " default_target=@dispvm default_target=@dispvm:"
+  let ask_params ..= " default_target=uuid: default_target=@dispvm:uuid:"
   let config_keys = "force-user="
   let config_keys ..= " exit-on-client-eof=false exit-on-client-eof=true"
   let config_keys ..= " exit-on-service-eof=false exit-on-service-eof=true"
@@ -98,11 +98,13 @@ function! qrexeccomplete#Complete(findstart, base)
         continue
       endif
       if len(split(l)[0]) == len(matchstr(split(l)[0], '^[0-9A-Za-z_-]\+$')) ||
-      \  len(split(l)[0]) == len(matchstr(split(l)[0], '^@\(dispvm:\(@tag:\)\?\|tag:\)[0-9A-Za-z_-]\+$'))
+      \  len(split(l)[0]) == len(matchstr(split(l)[0], '^@\(dispvm:\(@tag:\)\?\|tag:\)[0-9A-Za-z_-]\+$')) ||
+      \  len(split(l)[0]) == len(matchstr(split(l)[0], '^\(@dispvm:\)\?uuid:[0-9a-f]\{8}\(-[0-9a-f]\{4}\)\{3}-[0-9a-f]\{12}$'))
         let sources .= " ".split(l)[0]
       endif
       if len(split(l)[1]) == len(matchstr(split(l)[1], '^[0-9A-Za-z_-]\+$')) ||
-      \  len(split(l)[1]) == len(matchstr(split(l)[1], '^@\(dispvm:\(@tag:\)\?\|tag:\)[0-9A-Za-z_-]\+$'))
+      \  len(split(l)[1]) == len(matchstr(split(l)[1], '^@\(dispvm:\(@tag:\)\?\|tag:\)[0-9A-Za-z_-]\+$')) ||
+      \  len(split(l)[1]) == len(matchstr(split(l)[1], '^\(@dispvm:\)\?uuid:[0-9a-f]\{8}\(-[0-9a-f]\{4}\)\{3}-[0-9a-f]\{12}$'))
         let destinations .= " ".split(l)[1]
       endif
       if len(split(l)) < 4
@@ -114,7 +116,8 @@ function! qrexeccomplete#Complete(findstart, base)
       if split(l)[2] ==# "allow"
         for p in split(l)[3:]
           if len(p) == len(matchstr(p, '^\(user\|target\)=[0-9A-Za-z=_-]\+$')) ||
-           \ len(p) == len(matchstr(p, '^target=@dispvm:[0-9A-Za-z=_-]\+$'))
+           \ len(p) == len(matchstr(p, '^target=@dispvm:[0-9A-Za-z=_-]\+$')) ||
+           \ len(p) == len(matchstr(p, '^target=\(@dispvm:\)\?uuid:[0-9a-f]\{8}\(-[0-9a-f]\{4}\)\{3}-[0-9a-f]\{12}$'))
             let allow_params .= " ".p
           endif
         endfor
@@ -122,7 +125,8 @@ function! qrexeccomplete#Complete(findstart, base)
       elseif split(l)[2] ==# "ask"
         for p in split(l)[3:]
           if len(p) == len(matchstr(p, '^\(user\|\(default_\)\?target\)=[0-9A-Za-z=_-]\+$')) ||
-           \ len(p) == len(matchstr(p, '^\(default_\)\?target=@dispvm:[0-9A-Za-z=_-]\+$'))
+           \ len(p) == len(matchstr(p, '^\(default_\)\?target=@dispvm:[0-9A-Za-z=_-]\+$')) ||
+           \ len(p) == len(matchstr(p, '^\(default_\)\?target=\(@dispvm:\)\?uuid:[0-9a-f]\{8}\(-[0-9a-f]\{4}\)\{3}-[0-9a-f]\{12}$'))
           let ask_params .= " ".p
           endif
         endfor
@@ -140,11 +144,13 @@ function! qrexeccomplete#Complete(findstart, base)
       let arguments .= " ".split(l)[1]
     endif
     if len(split(l)[2]) == len(matchstr(split(l)[2], '^[0-9A-Za-z_-]\+$')) ||
-    \  len(split(l)[2]) == len(matchstr(split(l)[2], '^@\(dispvm:\(@tag:\)\?\|tag:\)[0-9A-Za-z_-]\+$'))
+    \  len(split(l)[2]) == len(matchstr(split(l)[2], '^@\(dispvm:\(@tag:\)\?\|tag:\)[0-9A-Za-z_-]\+$')) ||
+    \  len(split(l)[2]) == len(matchstr(split(l)[2], '^\(@dispvm:\)\?uuid:[0-9a-f]\{8}\(-[0-9a-f]\{4}\)\{3}-[0-9a-f]\{12}$'))
       let sources .= " ".split(l)[2]
     endif
     if len(split(l)[3]) == len(matchstr(split(l)[3], '^[0-9A-Za-z_-]\+$')) ||
-    \  len(split(l)[3]) == len(matchstr(split(l)[3], '^@\(dispvm:\(@tag:\)\?\|tag:\)[0-9A-Za-z_-]\+$'))
+    \  len(split(l)[3]) == len(matchstr(split(l)[3], '^@\(dispvm:\(@tag:\)\?\|tag:\)[0-9A-Za-z_-]\+$')) ||
+    \  len(split(l)[3]) == len(matchstr(split(l)[3], '^\(@dispvm:\)\?uuid:[0-9a-f]\{8}\(-[0-9a-f]\{4}\)\{3}-[0-9a-f]\{12}$'))
       let destinations .= " ".split(l)[3]
     endif
     if len(split(l)) < 6
@@ -156,7 +162,8 @@ function! qrexeccomplete#Complete(findstart, base)
     if split(l)[4] ==# "allow"
       for p in split(l)[5:]
         if len(p) == len(matchstr(p, '^\(user\|target\)=[0-9A-Za-z=_-]\+$')) ||
-          \ len(p) == len(matchstr(p, '^target=@dispvm:[0-9A-Za-z=_-]\+$'))
+        \  len(p) == len(matchstr(p, '^target=@dispvm:[0-9A-Za-z=_-]\+$')) ||
+        \  len(p) == len(matchstr(p, '^target=\(@dispvm:\)\?uuid:[0-9a-f]\{8}\(-[0-9a-f]\{4}\)\{3}-[0-9a-f]\{12}$'))
           let allow_params .= " ".p
         endif
       endfor
@@ -164,7 +171,8 @@ function! qrexeccomplete#Complete(findstart, base)
     elseif split(l)[4] ==# "ask"
       for p in split(l)[5:]
         if len(p) == len(matchstr(p, '^\(user\|\(default_\)\?target\)=[0-9A-Za-z=_-]\+$')) ||
-          \ len(p) == len(matchstr(p, '^\(default_\)\?target=@dispvm:[0-9A-Za-z=_-]\+$'))
+        \  len(p) == len(matchstr(p, '^\(default_\)\?target=@dispvm:[0-9A-Za-z=_-]\+$')) ||
+        \  len(p) == len(matchstr(p, '^\(default_\)\?target=\(@dispvm:\)\?uuid:[0-9a-f]\{8}\(-[0-9a-f]\{4}\)\{3}-[0-9a-f]\{12}$'))
         let ask_params .= " ".p
         endif
       endfor

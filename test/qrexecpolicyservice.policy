@@ -28,10 +28,12 @@ source dest ask   notify=yes autostart=no user=user target=example default_targe
 
 ## @token in target and default_target
 source dest deny notify=no
-source dest ask target=@dispvm:test default_target=@dispvm
+source dom0 allow target=@adminvm
 source dest allow target=@dispvm:test
 source dom0 ask target=@adminvm default_target=@adminvm
-source dom0 allow target=@adminvm
+source dest ask target=@dispvm:test default_target=@dispvm
+source dom0 ask target=uuid:12345678-abcd-abcd-abcd-12345678abcd default_target=uuid:12345678-abcd-abcd-abcd-12345678abcd
+source dom0 ask target=@dispvm:uuid:12345678-abcd-abcd-abcd-12345678abcd default_target=@dispvm:uuid:12345678-abcd-abcd-abcd-12345678abcd
 
 ## Source and Destination with catch all and @tokens
 *                   *                   deny
@@ -47,6 +49,7 @@ source              @dispvm             deny
 @type:DispVM        @type:DispVM        deny
 @type:StandaloneVM  @type:StandaloneVM  deny
 @type:TemplateVM    @type:TemplateVM    deny
+uuid:12345678-abcd-abcd-abcd-12345678abcd @dispvm:uuid:12345678-abcd-abcd-abcd-12345678abcd deny
 
 ## }}}
 ## Invalid {{{
@@ -82,6 +85,13 @@ source dest incorrect
 ## Literal Source and Destination Test
 ** test-m@e deny
 any&vm t=est deny
+
+## UUID Source and Destination Test
+a uuuid:12345678-abcd-abcd-abcd-12345678abcd         deny
+uuid::12345678-abcd-abcd-abcd-12345678abcd a         deny
+a @dispvm:uuid:g2345678-abcd-abcd-abcd-12345678abcd deny
+@dispvm:uuid:12345678-abcd-abcd-abcd-12345678abcd1 a deny
+
 
 ## Token Source and Destination Test
 @anyvmm       @anyvm deny
@@ -120,6 +130,10 @@ any&vm t=est deny
 * * ask notify=yesyes autostart=nno
 * * ask notify=noo    autostart=nono
 * * ask notify=-.+@!   autostart=/*!@%&
+
+## Target UUID parameters Test
+* * ask target=@dispvm:uuid: default_target=@dispvm:uuid:a
+* * ask target=uuid: default_target=uuid:a
 
 ## Target @token parameters Test
 * * ask target=@dispvm: default_target=@dispvmm

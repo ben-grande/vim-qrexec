@@ -3,7 +3,7 @@
 ## Maintainer:   Ben Grande <ben.grande.b@gmail.com>
 ## License:      Vim (see :h license)
 ## Repository:   https://codeberg.org/ben.grande.b/vim-qrexec
-## Last Change:  2023 May 26
+## Last Change:  2024 Oct 10
 ##
 ## Vim requires a compiled spell file to work and this process is manual.
 ## If you have changed this '.add' file, please regenerate the '.spl' file:
@@ -40,6 +40,8 @@ XXX
 !include-service
 
 ## Literal names
+UUID
+uuid
 dom0
 
 ## Tokens
